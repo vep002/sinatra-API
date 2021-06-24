@@ -18,4 +18,35 @@ class ApplicationController < Sinatra::Base
     
   # end
 
+
+  get "/users" do
+    User.all.to_json({
+    include: {gardens: {include: :plants}}
+    })
+  end
+
+  post "/login" do
+    user = User.find_by(username: params[:username], password: params[:password])
+    if user.nil?
+      {error: "Incorrect username or password"}.to_json
+    else
+      user.to_json(include: {gardens: {include: :plants}})
+    end
+  end
+
+  post "/signup" do
+    user = User.find_by(username: params[:username])
+    if user
+      {error: "Username already exists"}.to_json
+    else
+      user.to_json(include: {gardens:{include: :plants}})
+    end
+  end
+
+  get "/plants" do 
+    Plant.all.to_json()
+  end
+
+
+
 end
