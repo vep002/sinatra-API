@@ -44,7 +44,18 @@ class ApplicationController < Sinatra::Base
   end
 
   get "/plants" do 
-    Plant.all.to_json()
+    Plant.group(:common_name).to_json()
+  end
+
+  post "/plants" do 
+    # 2.c) Backend recieves the post request and uses the plant_id sent from frontend to find a matching plant in the database.
+    plant = Plant.find_by(plant_id: params[:plant_id])
+    # 2.d) Creating an attributes hash for a new plant, based on the plant found in the above step, as well as the garden_id sent from the frontend.
+    attributes = {genus: plant.genus, care_instructions: plant.care_instructionns, garden_id: params[:garden_id], image: plant.image, common_name: plant.common.name}
+    # 2.e) creating a new plant with the attributes hash above
+    newPlant = Plant.create(attributes)
+    # 2.f) sending the new plant back to the front end. See frontend for next steps.
+    newPlant.to_json()
   end
 
 
